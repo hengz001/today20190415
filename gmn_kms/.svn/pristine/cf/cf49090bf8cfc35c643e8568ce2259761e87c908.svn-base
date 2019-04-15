@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sino.gmn.dao.CmdMapper" >
+  <resultMap id="BaseResultMap" type="sino.gmn.model.Cmd" >
+    <id column="c_id" property="cId" jdbcType="INTEGER" />
+    <result column="c_cmd" property="cCmd" jdbcType="VARCHAR" />
+    <result column="c_request" property="cRequest" jdbcType="VARCHAR" />
+    <result column="c_response" property="cResponse" jdbcType="VARCHAR" />
+    <result column="c_describle" property="cDescrible" jdbcType="VARCHAR" />
+    <result column="c_flag" property="cFlag" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="findTotal" parameterType="sino.gmn.model.Page" resultType="java.lang.Integer">
+    select COUNT(*) from cmd_table
+        where c_flag=1
+          <if test="page.name!=null and page.value!=null and page.name!='' and page.value!='' ">
+            AND ${page.name} LIKE CONCAT(#{page.value},'%')
+          </if>
+  </select>
+
+  <select id="findAllCmd" resultMap="BaseResultMap">
+    SELECT * FROM cmd_table
+  </select>
+
+  <select id="selectPageSort" parameterType="sino.gmn.model.Page" resultMap="BaseResultMap">
+    SELECT * FROM cmd_table
+      WHERE c_flag=1
+      <if test="page.name!=null and page.value!=null and page.name!='' and page.value!='' ">
+        AND ${page.name} LIKE CONCAT(#{page.value},'%')
+      </if>
+
+      <if test="page.sort!=null and page.order!=null">
+        <choose>
+          <when test="page.sort=='cCmd'.toString()">
+              ORDER BY c_cmd ${page.order}
+          </when>
+          <when test="page.sort=='cRequest'.toString()">
+              ORDER BY c_request ${page.order}
+          </when>
+          <when test="page.sort=='cResponse'.toString()">
+              ORDER BY c_response ${page.order}
+          </when>
+          <when test="page.sort=='cDescrible'.toString()">
+              ORDER BY c_describle ${page.order}
+          </when>
+        </choose>
+      </if>
+      LIMIT #{page.first} ,#{page.rows}
+  </select>
+
+  <sql id="Base_Column_List" >
+    c_id, c_cmd, c_request, c_response, c_describle, c_flag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cmd_table
+    where c_id = #{cId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cmd_table
+    where c_id = #{cId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="sino.gmn.model.Cmd" >
+    insert into cmd_table (c_id, c_cmd, c_request, 
+      c_response, c_describle, c_flag
+      )
+    values (#{cId,jdbcType=INTEGER}, #{cCmd,jdbcType=VARCHAR}, #{cRequest,jdbcType=VARCHAR}, 
+      #{cResponse,jdbcType=VARCHAR}, #{cDescrible,jdbcType=VARCHAR}, #{cFlag,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="sino.gmn.model.Cmd" >
+    insert into cmd_table
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cId != null" >
+        c_id,
+      </if>
+      <if test="cCmd != null" >
+        c_cmd,
+      </if>
+      <if test="cRequest != null" >
+        c_request,
+      </if>
+      <if test="cResponse != null" >
+        c_response,
+      </if>
+      <if test="cDescrible != null" >
+        c_describle,
+      </if>
+      <if test="cFlag != null" >
+        c_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cId != null" >
+        #{cId,jdbcType=INTEGER},
+      </if>
+      <if test="cCmd != null" >
+        #{cCmd,jdbcType=VARCHAR},
+      </if>
+      <if test="cRequest != null" >
+        #{cRequest,jdbcType=VARCHAR},
+      </if>
+      <if test="cResponse != null" >
+        #{cResponse,jdbcType=VARCHAR},
+      </if>
+      <if test="cDescrible != null" >
+        #{cDescrible,jdbcType=VARCHAR},
+      </if>
+      <if test="cFlag != null" >
+        #{cFlag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="sino.gmn.model.Cmd" >
+    update cmd_table
+    <set >
+      <if test="cCmd != null" >
+        c_cmd = #{cCmd,jdbcType=VARCHAR},
+      </if>
+      <if test="cRequest != null" >
+        c_request = #{cRequest,jdbcType=VARCHAR},
+      </if>
+      <if test="cResponse != null" >
+        c_response = #{cResponse,jdbcType=VARCHAR},
+      </if>
+      <if test="cDescrible != null" >
+        c_describle = #{cDescrible,jdbcType=VARCHAR},
+      </if>
+      <if test="cFlag != null" >
+        c_flag = #{cFlag,jdbcType=INTEGER},
+      </if>
+    </set>
+    where c_id = #{cId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sino.gmn.model.Cmd" >
+    update cmd_table
+    set c_cmd = #{cCmd,jdbcType=VARCHAR},
+      c_request = #{cRequest,jdbcType=VARCHAR},
+      c_response = #{cResponse,jdbcType=VARCHAR},
+      c_describle = #{cDescrible,jdbcType=VARCHAR},
+      c_flag = #{cFlag,jdbcType=INTEGER}
+    where c_id = #{cId,jdbcType=INTEGER}
+  </update>
+</mapper>

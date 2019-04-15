@@ -1,0 +1,28 @@
+package sino.gmn.dao;
+
+import org.apache.ibatis.annotations.Param;
+import sino.gmn.model.Cmd;
+import sino.gmn.model.Page;
+
+import java.util.List;
+
+public interface CmdMapper {
+
+
+    List<Cmd> selectPageSort(@Param("page") Page page);
+
+    int findTotal(@Param("page") Page page);
+
+    int deleteByPrimaryKey(Integer cId);
+
+    int insert(Cmd record);
+
+    int insertSelective(Cmd record);
+
+    Cmd selectByPrimaryKey(Integer cId);
+
+    int updateByPrimaryKeySelective(Cmd record);
+
+    int updateByPrimaryKey(Cmd record);
+
+}

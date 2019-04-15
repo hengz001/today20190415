@@ -1,0 +1,152 @@
+
+var CMD = "";
+var CMD_HEX = "";
+
+//on.1 off.0
+function operation_connect_button(value){
+    value = parseInt(value);
+
+    if(value==1){
+        $('#ip').textbox('enable');
+        $('#port').textbox('enable');
+        $('#con_button').linkbutton('enable');
+    }
+    else{
+        $('#ip').textbox('disable');
+        $('#port').textbox('disable');
+        $('#con_button').linkbutton('disable');
+    }
+}
+//END
+
+//on.1 off.0
+function operation_send_button(value) {
+    value = parseInt(value);
+
+    if (value == 1) {
+        $("#request").textbox("enable");
+        $("#response").textbox("enable");
+        $("#hexButton").switchbutton("enable");
+        $("#req_button").linkbutton("enable");
+    } else {
+        $("#request").textbox("disable");
+        $("#response").textbox("disable");
+        $("#hexButton").switchbutton("disable");
+        $("#req_button").linkbutton("disable");
+    }
+}
+//END
+
+//建立连接
+function req_connect(url)
+{
+    var ip = $('#ip').val();
+    var port = $('#port').val();
+
+    if(ip==null || port==null || ip=='' || port==''){
+        alert("请输入IP,端口!");
+        return ;
+    }else{
+        var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+        if(!reg.test(ip))
+        {
+            alert("请输入正确的IP!");
+            return ;
+        }
+        port = parseInt(port);
+        if(port<0 || port>65536){
+            alert("请输入正确的端口!");
+            return ;
+        }
+    }
+    operation_connect_button(0);
+
+    $.ajax({
+        url:url,
+        data:{ip:ip,port:port},
+        type:'post',
+        success:function(val){
+            if(parseInt(val) < 0){
+                alert("连接失败,请检查IP,端口!");
+                operation_connect_button(1);
+            }else{
+                alert(ip+":"+port+" 连接成功.");
+                operation_send_button(1);
+            }
+        },
+        error:function(){
+            alert("Error 连接失败,请检查IP,端口!");
+            operation_connect_button(1);
+        }
+    });
+}
+//建立连接 END
+
+//发送命令
+function send_cmd(url){
+    var cmd = $('#request').val();
+    var ip = $('#ip').val();
+    var port = $('#port').val();
+
+    if(cmd==null || cmd==''){
+        alert("请输入正确数据!");
+        return;
+    }
+    operation_send_button(0);
+    $.ajax({
+        url:url,
+        data:{'cmd':cmd,ip:ip,port:port},
+        type:'post',
+        success:function(data){
+            var rc = data.rc;
+            rc = parseInt(rc);
+            switch (rc) {
+                case -1:
+                    alert("["+rc+"] HSM connect error!");
+                    operation_connect_button(1);
+                    return;
+                case -2:
+                    alert("["+rc+"] 错误的指令!");
+                    operation_send_button(1);
+                    return;
+                case -3:
+                    alert("["+rc+"] HSM send error!");
+                    operation_connect_button(1);
+                    return;
+                case -4:
+                    alert("["+rc+"] HSM recv error!");
+                    operation_connect_button(1);
+                    return;
+                default:
+                    CMD = data.cmd;
+                    CMD_HEX = data.cmd_hex;
+
+                    break;
+            }
+
+            //设置响应数据
+            if($("#hexButton").switchbutton("options").checked){
+                $("#response").textbox("setValue",CMD_HEX);
+            }else{
+                $("#response").textbox("setValue",CMD);
+            }
+            alert("Success.");
+            operation_send_button(1);
+        },
+        error:function(){
+            alert("Error!");
+        }
+    });
+}
+//发送命令 END
+
+//on off
+function req_get_flag(){
+    //设置响应数据
+    if($("#hexButton").switchbutton("options").checked){
+        $("#response").textbox("setValue",CMD_HEX);
+    }else{
+        $("#response").textbox("setValue",CMD);
+    }
+}
+//END
