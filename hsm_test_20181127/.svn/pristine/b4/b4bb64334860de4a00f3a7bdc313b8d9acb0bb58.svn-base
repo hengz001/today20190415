@@ -1,0 +1,35 @@
+/*配置信息*/
+
+//IP
+#IP = 192.168.1.201
+IP = 192.168.1.149
+
+//PORT
+PORT = 8000
+
+//连接超时
+TIMEOUT = 3000
+
+//线程数
+THREAD_NUM = 1
+
+//业务数
+TOTAL = 10000
+
+//测试文件
+DATA_PATH = ./data.txt
+
+//无线循环
+LOOP  = false
+
+//显示信息
+VIEW  = true
+
+//提前生成密钥文件
+BEFORE_PATH = ./before.txt
+
+//出错等待时间
+WAIT_TIME = 0
+
+//Log
+LOG_PATH = ./log.txt

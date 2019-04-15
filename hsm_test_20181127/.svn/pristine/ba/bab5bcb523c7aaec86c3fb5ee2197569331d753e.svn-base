@@ -1,0 +1,78 @@
+package sino.java.run;
+
+import java.util.List;
+import java.util.Map;
+
+import sino.java.thread.MyThread;
+import sino.java.thread.MyThreadStart;
+import sino.java.tool.BeforeTools;
+import sino.java.tool.ClockTools;
+import sino.java.tool.FileTools;
+
+public class Running {
+
+	public static String IP;
+	public static  String DATA_PATH;
+	public static  String BEFORE_PATH;
+	public static  String LOG_PATH;
+	public static int PORT;
+	public static int TIMEOUT;
+	public static int THREAD_NUM;
+	public static int TOTAL;
+	public static int WAIT_TIME;
+	public static  boolean LOOP;
+	public static  boolean VIEW;
+	
+	public Running() {
+		Map<String, String> map = null;
+		map = new FileTools().readConfigFile();
+		String sIP = map.get("IP");
+		String sDATA_PATH = map.get("DATA_PATH");
+		String sBEFORE_PATH = map.get("BEFORE_PATH");
+		String sLOG_PATH = map.get("LOG_PATH");
+		String sPORT = map.get("PORT");
+		String sTIMEOUT = map.get("TIMEOUT");
+		String sTHREAD_NUM = map.get("THREAD_NUM");
+		String sTOTAL = map.get("TOTAL");
+		String sLOOP = map.get("LOOP");
+		String sVIEW = map.get("VIEW");
+		String sWAIT_TIME = map.get("WAIT_TIME");
+		
+		IP = sIP;
+		DATA_PATH = sDATA_PATH;
+		BEFORE_PATH = sBEFORE_PATH;
+		LOG_PATH = sLOG_PATH;
+		PORT = Integer.parseInt(sPORT);
+		TIMEOUT = Integer.parseInt(sTIMEOUT);
+		THREAD_NUM = Integer.parseInt(sTHREAD_NUM);
+		WAIT_TIME = Integer.parseInt(sWAIT_TIME);
+		TOTAL = Integer.parseInt(sTOTAL);
+		LOOP = ("true".equals(sLOOP))?(true):(false);
+		VIEW = ("true".equals(sVIEW))?(true):(false);
+		
+		new BeforeTools().beforeAction();
+	}
+
+	public static void main(String[] args) {
+		
+		Running run = new Running();
+		ClockTools clockTools = new ClockTools();
+		long start , end;
+		
+		System.out.println("> program start");
+		start = clockTools.clock();
+		//running
+		run.testThread();
+		end = clockTools.clock();
+		System.out.println("use time:"+clockTools.showClock(start, end)+"s");
+	}
+
+	public void testThread() {
+		MyThreadStart m = new MyThreadStart();
+		List<MyThread> list = m.getMyThreadList(THREAD_NUM, IP, PORT, TIMEOUT);
+		if(null==list) {
+			return ;
+		}
+		m.threadStart(TOTAL, THREAD_NUM, list);
+	}
+}

@@ -1,0 +1,24 @@
+package sino.java.tool;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class ClockTools {
+
+	public long clock(){
+		return System.currentTimeMillis();
+	}
+
+	public double clockTimeFloat(long start, long end) {
+		return ((double)(end-start))/1000;
+	}
+
+	public String showClock(long start, long end) {
+		return new DecimalTools().twoDecimal(clockTimeFloat(start, end));
+	}
+	
+	public String getDateTime() {
+		SimpleDateFormat sdf = new SimpleDateFormat("YY-MM-dd hh:mm:ss");
+		sdf.format(new Date());
+		return sdf.format(new Date());
+	}
+}

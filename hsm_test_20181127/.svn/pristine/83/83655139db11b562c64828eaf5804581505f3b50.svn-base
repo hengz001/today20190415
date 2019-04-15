@@ -1,0 +1,62 @@
+package sino.java.thread;
+
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import sino.java.run.Running;
+import sino.java.tool.CmdTools;
+import sino.java.tool.SockTools;
+
+public class MyThreadStart {
+
+	public List<MyThread> getMyThreadList(int thread_num,String hostname,int port,int timeout) {
+		SockTools sockTools = new SockTools();
+		List<byte[]> list;
+		List<MyThread> listMyThread = new ArrayList<MyThread>();
+		
+		//
+		list = new CmdTools().getCmd(Running.DATA_PATH);
+
+		for(int i=0; i<thread_num; i++) {
+			//socket
+			Socket sockfd = sockTools.getSocket(hostname, port, timeout);
+			if(null == (sockfd)) {
+				return null;
+			}
+			//thread
+			MyThread myThread = new MyThread(this, sockfd, list);
+			listMyThread.add(myThread);
+		}
+		
+		return listMyThread;
+	}
+	
+	public int threadStart(int total, int thread_num, List<MyThread> myThreads) {
+		MyThreadParameter.TOTAL = total;
+		List<Thread> list = new ArrayList<Thread>();
+		
+		for(int i=0; i<thread_num; i++) {
+			Thread thread = new Thread((Runnable)myThreads.get(i), i+"");
+			list.add(thread);
+		}
+		
+		for (Thread thread : list) {
+			thread.start();
+		}
+		
+		for (Thread thread : list) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println();
+		System.out.print(" Count:"+MyThreadParameter.COUNT);
+		System.out.print(" Success:"+MyThreadParameter.SUCCESS);
+		System.out.print(" Error:"+MyThreadParameter.ERROR);
+		System.out.println();
+		return 0;
+	}
+}
